@@ -29,9 +29,16 @@ android {
 
     compileSdkVersion 30
 
+    // Set Java compatibility to 1.8 and Kotlin JVM target to 1.8 to avoid inconsistent JVM-target issues
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    // kotlinOptions inside android block may not be recognized by older Kotlin plugin versions,
+    // so we also configure the KotlinCompile tasks below. This in-block setting is kept for clarity.
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 
     sourceSets {
@@ -39,6 +46,13 @@ android {
     }
     defaultConfig {
         minSdkVersion 24
+    }
+}
+
+// Ensure all Kotlin compilation tasks use jvmTarget 1.8 (works across plugin versions)
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 }
 
@@ -76,11 +90,5 @@ afterEvaluate {
                 compileOnly "android.arch.lifecycle:common-java8:$lifecycle_version"
             }
         }
-    }
-}
-
-tasks.withType(KotlinCompile).configureEach {
-    kotlinOptions {
-        jvmTarget = "1.8"
     }
 }
